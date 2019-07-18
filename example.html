@@ -11,9 +11,15 @@
 <body>
 	<h1>Pattern Generator</h1>
 	<p>A pattern generator for creating backgrounds for HTML pages, made with JavaScript. Many different patterns and gradients are possible, and random ones can be generated along with the text colors.</p>
-	<p>To use, include the <code>patternGenerator.js</code> file directly in your projects to create random backgrounds.</p>
+
+	<p>Include the <code>patternGenerator.js</code> file directly in your projects, then add some code like the following to your HTML:</p>
+	<pre>&lt;script src="patternGenerator.js"&gt;&lt;/script&gt;
+&lt;script&gt;patternGenerator.applyRandomPattern()&lt;/script&gt;</pre>
+
+	<p><strong>The pattern generator script must be loaded before using the <code>applyRandomPattern()</code> function.</strong></p>
 
 	<script src="patternGenerator.js"></script>
+	<script>patternGenerator.applyRandomPattern();</script>
 </body>
 
 </html>
