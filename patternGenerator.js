@@ -1,59 +1,50 @@
 const patternGenerator = {
 	applyRandomPattern: () => {
-		let colors = [];
-		if (Math.random() < 0.5) {
-			if (Math.random() < 0.5) {
-				for (let i = 0; i < 6; i++) colors.push(Math.floor(Math.random() * 256));
+		let types = ["linear", "radial"];
 
-				let direction = `${Math.floor(Math.random() * 360)}deg`;
-				let color1 = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-				let color2 = `rgb(${colors[3]}, ${colors[4]}, ${colors[5]})`;
-				let colorStop = `${(Math.random() * 30 + 35).toFixed(1)}%`;
+		// Generate background and foreground colors
+		const chosenType = types[Math.floor(Math.random() * types.length)];
 
-				document.body.style.background = `linear-gradient(${direction}, ${color1}, ${color2} ${colorStop}) fixed`;
-			} else {
-				for (let i = 0; i < 9; i++) colors.push(Math.floor(Math.random() * 256));
-
-				let direction = `${Math.floor(Math.random() * 360)}deg`;
-				let color1 = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-				let color2 = `rgb(${colors[3]}, ${colors[4]}, ${colors[5]})`;
-				let color3 = `rgb(${colors[6]}, ${colors[7]}, ${colors[8]})`;
-				let colorStop1 = `${(Math.random() * 10).toFixed(1)}%`;
-				let colorStop2 = `${(Math.random() * 20 + 40).toFixed(1)}%`;
-				let colorStop3 = `${(Math.random() * 10 + 90).toFixed(1)}%`;
-
-				document.body.style.background = `linear-gradient(${direction}, ${color1} ${colorStop1}, ${color2} ${colorStop2}, ${color3} ${colorStop3}) fixed`;
-			}
-		} else {
-			let center = `${(Math.random() * 100).toFixed(1)}% ${(Math.random() * 100).toFixed(1)}%`;
-			if (Math.random() < 0.5) {
-				for (let i = 0; i < 6; i++) {colors.push(Math.floor(Math.random() * 256));};
-
-				let color1 = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-				let color2 = `rgb(${colors[3]}, ${colors[4]}, ${colors[5]})`;
-				let colorStop = `${(Math.random() * 30 + 35).toFixed(1)}%`;
-
-				document.body.style.background = `radial-gradient(circle at ${center}, ${color1}, ${color2} ${colorStop}) fixed`;
-			} else {
-				for (let i = 0; i < 9; i++) colors.push(Math.floor(Math.random() * 256));
-
-				let color1 = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-				let color2 = `rgb(${colors[3]}, ${colors[4]}, ${colors[5]})`;
-				let color3 = `rgb(${colors[6]}, ${colors[7]}, ${colors[8]})`;
-				let colorStop1 = `${(Math.random() * 10).toFixed(1)}%`;
-				let colorStop2 = `${(Math.random() * 20 + 40).toFixed(1)}%`;
-				let colorStop3 = `${(Math.random() * 10 + 90).toFixed(1)}%`;
-
-				document.body.style.background = `radial-gradient(circle at ${center}, ${color1} ${colorStop1}, ${color2} ${colorStop2}, ${color3} ${colorStop3}) fixed`;
-			}
+		const numColors = Math.floor(Math.random() * 2) + 2, // 2 or 3
+			perPart = 100 / numColors;
+		let colors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)],
+			stopPositions = [];
+		for (let i = 1; i < numColors; i++) {
+			colors.push(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
+			
+			/*
+				Examples:
+				2 parts: (1) 50.0 +- 25.0%
+				3 parts: (1) 33.3 +- 16.7% (2) 66.7 +- 16.7%
+			*/
+			stopPositions.push(perPart * (Math.random() + i - 0.5));
 		}
 
-		let textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+		let background;
+		if (chosenType == "linear") {
+			const direction = Math.floor(Math.random() * 360) + "deg";
+			background = "linear-gradient(" + direction;
+		} else {
+			const center = `${(Math.random() * 100).toFixed(1)}% ${(Math.random() * 100).toFixed(1)}%`;
+			background = `radial-gradient(circle at ${center}`;
+		}
+		background += ", rgb(" + colors.slice(0, 3).join(", ") + ")";
+
+		for (let i = 0; i < stopPositions.length; i++) {
+			background += `, rgb(${colors.slice(i * 3 + 3, i * 3 + 6).join(", ")}) ${stopPositions[i].toFixed(1)}%`;
+		}
+		background += ") fixed";
+
+		// Apply the background
+		document.body.style.background = background;
+
+		// Apply the foreground, with text shadow color based on the color
+		const textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
 		if (textColors[0] + textColors[1] + textColors[2] < 384) {
 			document.body.style.textShadow = "1px 1px 1px rgb(255, 255, 255), 1px 1px 1px rgb(255, 255, 255)";
 		} else {
 			document.body.style.textShadow = "1px 1px 1px rgb(0, 0, 0), 1px 1px 1px rgb(0, 0, 0)";
 		}
-		document.body.style.color = `rgb(${textColors[0]}, ${textColors[1]}, ${textColors[2]})`;
+		document.body.style.color = `rgb(${textColors.join(", ")})`;
 	}
 }
