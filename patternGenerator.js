@@ -1,6 +1,41 @@
 const patternGenerator = {
-	applyRandomPattern: () => {
+	applyRandomPattern: (type = "document", options = {}) => {
+		// Check types and generate the array of elements
+		let targets;
+		if (type == "document") {
+			targets = [document.body];
+		} else if (type == "id") {
+			const elementWithId = document.getElementById(options.id);
+			if (!elementWithId) throw new Error(`No element with ID '${options.id}' found`);
+			targets = [elementWithId];
+		} else if (type == "class") {
+			const elementsWithClass = document.getElementsByClassName(options.class);
+			if (elementsWithClass.length == 0) {
+				throw new Error(`No element with class name '${options.class}' found`);
+			} else if (elementsWithClass.length > 1000) {
+				console.warn("Many elements are affected by the generated pattern; performance may be slow.");
+			}
+			targets = elementsWithClass;
+		} else {
+			throw new Error("Element type must be 'document', 'id', or 'class'");
+		}
+
+		// Preparation for generating
 		let types = ["linear", "radial"];
+		if (options.types) {
+			const userTypes = new Set(options.types).values();
+			for (const type of userTypes) {
+				if (!types.includes(type)) throw new Error(`Invalid pattern type '${type}'`);
+			}
+			types = options.types;
+		} else if (options.exclude) {
+			const userTypes = new Set(options.exclude).values();
+			for (const toExclude of userTypes) {
+				const typeIndex = types.indexOf(toExclude);
+				if (typeIndex == -1) throw new Error(`Invalid pattern type '${type}'`);
+				types.splice(typeIndex, 1);
+			}
+		}
 
 		// Generate background and foreground colors
 		const chosenType = types[Math.floor(Math.random() * types.length)];
@@ -35,16 +70,19 @@ const patternGenerator = {
 		}
 		background += ") fixed";
 
-		// Apply the background
-		document.body.style.background = background;
+		// Apply background and foreground to target elements
+		for (const targetElement of targets) {
+			// Background
+			targetElement.style.background = background;
 
-		// Apply the foreground, with text shadow color based on the color
-		const textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
-		if (textColors[0] + textColors[1] + textColors[2] < 384) {
-			document.body.style.textShadow = "1px 1px 1px rgb(255, 255, 255), 1px 1px 1px rgb(255, 255, 255)";
-		} else {
-			document.body.style.textShadow = "1px 1px 1px rgb(0, 0, 0), 1px 1px 1px rgb(0, 0, 0)";
+			// Foreground, with text shadow color based on the color
+			const textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+			if (textColors[0] + textColors[1] + textColors[2] < 384) {
+				targetElement.style.textShadow = "1px 1px 1px rgb(255, 255, 255), 1px 1px 1px rgb(255, 255, 255)";
+			} else {
+				targetElement.style.textShadow = "1px 1px 1px rgb(0, 0, 0), 1px 1px 1px rgb(0, 0, 0)";
+			}
+			targetElement.style.color = `rgb(${textColors.join(", ")})`;
 		}
-		document.body.style.color = `rgb(${textColors.join(", ")})`;
 	}
 }
