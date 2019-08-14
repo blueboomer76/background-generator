@@ -37,7 +37,7 @@ const patternGenerator = {
 			}
 		}
 
-		// Generate background and foreground colors
+		// Generate background colors
 		const chosenType = types[Math.floor(Math.random() * types.length)];
 
 		const numColors = Math.floor(Math.random() * 2) + 2, // 2 or 3
@@ -70,19 +70,7 @@ const patternGenerator = {
 		}
 		background += ") fixed";
 
-		// Apply background and foreground to target elements
-		for (const targetElement of targets) {
-			// Background
-			targetElement.style.background = background;
-
-			// Foreground, with text shadow color based on the color
-			const textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
-			if (textColors[0] + textColors[1] + textColors[2] < 384) {
-				targetElement.style.textShadow = "1px 1px 1px rgb(255, 255, 255), 1px 1px 1px rgb(255, 255, 255)";
-			} else {
-				targetElement.style.textShadow = "1px 1px 1px rgb(0, 0, 0), 1px 1px 1px rgb(0, 0, 0)";
-			}
-			targetElement.style.color = `rgb(${textColors.join(", ")})`;
-		}
+		// Apply background to target elements
+		for (const targetElement of targets) targetElement.style.background = background;
 	}
 }
