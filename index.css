@@ -1,3 +1,13 @@
-body {font-size: 150%;}
+body {
+	font-size: 150%;
+	text-shadow: 1px 1px 2.5px rgba(255, 255, 255, 0.6),
+		1px -1px 2.5px rgba(255, 255, 255, 0.6),
+		-1px -1px 2.5px rgba(255, 255, 255, 0.6),
+		-1px 1px 2.5px rgba(255, 255, 255, 0.6);
+}
 
-code, pre {background: rgba(192, 192, 192, 0.4);}
+code, pre {
+	background: rgba(192, 192, 192, 0.6);
+	border-radius: 3px;
+	text-shadow: none;
+}

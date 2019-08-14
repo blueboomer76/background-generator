@@ -10,7 +10,7 @@
 
 <body>
 	<h1>Background Generator</h1>
-	<p>A background generator for creating backgrounds for HTML pages, made with JavaScript. Many different backgrounds, gradients, and patterns are possible, and random ones can be generated along with the text colors.</p>
+	<p>A background generator for creating backgrounds for HTML pages, made with JavaScript. Many different backgrounds, gradients, and patterns can be generated, with many customizable options.</p>
 
 	<p>Include the <code>background-generator.js</code> file directly in your projects, then add some code like the following to your HTML:</p>
 	<pre>&lt;script src="background-generator.js"&gt;&lt;/script&gt;
@@ -18,8 +18,13 @@
 
 	<p><strong>The background generator script must be loaded before using the <code>generateBackground()</code> function.</strong></p>
 
+	<button onclick="changeBackground()">Generate New Background</button>
+
 	<script src="background-generator.js"></script>
-	<script>generateBackground();</script>
+	<script>
+		function changeBackground() {generateBackground();}
+		changeBackground();
+	</script>
 </body>
 
 </html>

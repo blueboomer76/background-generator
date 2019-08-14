@@ -28,11 +28,13 @@ function generateBackground(type = "document", options = {}) {
 	// Preparation for generating
 	let types = ["linear", "linear-3", "radial", "radial-3"];
 	if (options.types) {
-		const userTypes = Array.from(new Set(options.types).values());
-		if (userTypes.some(t => types.indexOf(t) == -1)) throw new Error("Nonexistent background type provided.");
+		const userTypes = new Set(options.types).values();
+		for (const type of userTypes) {
+			if (types.indexOf(type) == -1) throw new Error("Nonexistent background type provided.");
+		}
  		types = options.types;
 	} else if (options.exclude) {
-		const userTypes = Array.from(new Set(options.exclude).values());
+		const userTypes = new Set(options.exclude).values();
 		for (const toExclude of userTypes) {
 			const typeIndex = types.indexOf(toExclude);
 			if (typeIndex == -1) throw new Error("Nonexistent background type provided.");
@@ -40,7 +42,7 @@ function generateBackground(type = "document", options = {}) {
 		}
 	}
 
-	// Generate background and foreground colors
+	// Generate background colors
 	const chosenType = types[Math.floor(Math.random() * types.length)];
 	let iters = parseInt(chosenType.split("-").pop());
 	if (isNaN(iters)) iters = 2;
@@ -72,18 +74,6 @@ function generateBackground(type = "document", options = {}) {
 	}
 	background += ") fixed";
 
-	// Apply background and foreground to target elements
-	for (const targetElement of target) {
-		// Background
-		targetElement.style.background = background;
-
-		// Foreground, with text shadow color based on the color
-		const textColors = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
-		if (textColors[0] + textColors[1] + textColors[2] < 384) {
-			targetElement.style.textShadow = "1px 1px 0.5px rgb(255, 255, 255), 1px 1px 0.5px rgb(255, 255, 255)";
-		} else {
-			targetElement.style.textShadow = "1px 1px 0.5px rgb(0, 0, 0), 1px 1px 0.5px rgb(0, 0, 0)";
-		}
-		targetElement.style.color = `rgba(${textColors.join(",")}, 0.8)`;
-	}
+	// Apply background to target elements
+	for (const targetElement of target) targetElement.style.background = background;
 }
