@@ -1,14 +1,14 @@
 const patternGenerator = {
-	applyRandomPattern: (type = "document", options = {}) => {
+	applyRandomPattern: (obj = "document", options = {}) => {
 		// Check types and generate the array of elements
 		let targets;
-		if (type == "document") {
+		if (obj == "document") {
 			targets = [document.body];
-		} else if (type == "id") {
+		} else if (obj == "id") {
 			const elementWithId = document.getElementById(options.id);
 			if (!elementWithId) throw new Error(`No element with ID '${options.id}' found`);
 			targets = [elementWithId];
-		} else if (type == "class") {
+		} else if (obj == "class") {
 			const elementsWithClass = document.getElementsByClassName(options.class);
 			if (elementsWithClass.length == 0) {
 				throw new Error(`No element with class name '${options.class}' found`);
@@ -16,8 +16,6 @@ const patternGenerator = {
 				console.warn("Many elements are affected by the generated pattern; performance may be slow.");
 			}
 			targets = elementsWithClass;
-		} else {
-			throw new Error("Element type must be 'document', 'id', or 'class'");
 		}
 
 		// Preparation for generating
@@ -46,7 +44,7 @@ const patternGenerator = {
 			stopPositions = [];
 		for (let i = 1; i < numColors; i++) {
 			colors.push(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
-			
+
 			/*
 				Examples:
 				2 parts: (1) 50.0 +- 25.0%
@@ -55,22 +53,78 @@ const patternGenerator = {
 			stopPositions.push(perPart * (Math.random() + i - 0.5));
 		}
 
-		let background;
-		if (chosenType == "linear") {
-			const direction = Math.floor(Math.random() * 360) + "deg";
-			background = "linear-gradient(" + direction;
+		const isLinear = chosenType == "linear";
+		let angle, centerX, centerY;
+		if (isLinear) angle = Math.random() * 360;
+		if (!isLinear || !targets) {
+			centerX = Math.random() * 100;
+			centerY = Math.random() * 100;
+		}
+
+		if (targets) {
+			let background = isLinear ? `linear-gradient(${angle.toFixed(1)}deg` : `radial-gradient(circle at ${centerX.toFixed(1)}% ${centerY.toFixed(1)}%`;
+			background += `, rgb(${colors.slice(0, 3).join(", ")})`;
+			for (let i = 0; i < stopPositions.length; i++) {
+				background += `, rgb(${colors.slice(i * 3 + 3, i * 3 + 6).join(", ")}) ${stopPositions[i].toFixed(1)}%`;
+			}
+			background += ") fixed";
+
+			// Apply background to target elements
+			for (const targetElement of targets) targetElement.style.background = background;
 		} else {
-			const center = `${(Math.random() * 100).toFixed(1)}% ${(Math.random() * 100).toFixed(1)}%`;
-			background = `radial-gradient(circle at ${center}`;
-		}
-		background += ", rgb(" + colors.slice(0, 3).join(", ") + ")";
+			let ctx;
+			if (obj instanceof HTMLCanvasElement) {
+				ctx = obj.getContext("2d");
+			} else if (obj instanceof CanvasRenderingContext2D) {
+				ctx = obj;
+			}
+			if (ctx) {
+				const width = parseFloat(options.width), height = parseFloat(options.height);
+				if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
+					throw new Error("The width and height of the pattern to apply to the canvas must be positive numbers.");
+				}
+				const fillX = options.x, fillY = options.y;
+				if ((fillX != undefined && isNaN(fillX)) || (fillY != undefined && isNaN(fillY))) {
+					throw new Error("The x and y positions to begin drawing the pattern to the canvas must be numbers.");
+				}
 
-		for (let i = 0; i < stopPositions.length; i++) {
-			background += `, rgb(${colors.slice(i * 3 + 3, i * 3 + 6).join(", ")}) ${stopPositions[i].toFixed(1)}%`;
-		}
-		background += ") fixed";
+				let gradient;
 
-		// Apply background to target elements
-		for (const targetElement of targets) targetElement.style.background = background;
+				if (isLinear) {
+					const centerToCornerLength = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)) / 2,
+						xOffset = centerToCornerLength * Math.cos((angle + 90) * Math.PI / 180),
+						yOffset = centerToCornerLength * Math.sin((angle + 90) * Math.PI / 180),
+						x1 = width / 2 + xOffset,
+						y1 = height / 2 + yOffset,
+						x2 = width / 2 - xOffset,
+						y2 = height / 2 - yOffset;
+					gradient = ctx.createLinearGradient(parseFloat(x1.toFixed(1)), parseFloat(y1.toFixed(1)),
+						parseFloat(x2.toFixed(1)), parseFloat(y2.toFixed(1)));
+				} else {
+					// Radius is from the center to the farthest corner
+					const cx = centerX * width / 100,
+						cy = centerY * height / 100,
+						radius = Math.sqrt(Math.pow(Math.max(cx, width - cx), 2) + Math.pow(Math.max(cy, height - cy), 2));
+					gradient = ctx.createRadialGradient(
+						parseFloat(cx.toFixed(1)),
+						parseFloat(cy.toFixed(1)),
+						5,
+						parseFloat(cx.toFixed(1)),
+						parseFloat(cy.toFixed(1)),
+						parseFloat(radius.toFixed(1))
+					);
+				}
+
+				gradient.addColorStop(0, `rgb(${colors.slice(0, 3).join(", ")})`);
+				for (let i = 0; i < stopPositions.length; i++) {
+					gradient.addColorStop(parseFloat((stopPositions[i] / 100).toFixed(3)), `rgb(${colors.slice(i * 3 + 3, i * 3 + 6).join(", ")})`);
+				}
+
+				ctx.fillStyle = gradient;
+				ctx.fillRect(fillX ? parseFloat(fillX.toFixed(1)) : 0, fillY ? parseFloat(fillY.toFixed(1)) : 0, width, height);
+			} else {
+				throw new TypeError("Invalid object provided to apply pattern.");
+			}
+		}
 	}
 }
