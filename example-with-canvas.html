@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Pattern Generator Example with Canvas</title>
+	<link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+	<h1>Pattern Generator with Canvas</h1>
+	<p>This is a modified version of the background generator, made with JavaScript and the HTML5 Canvas API. Many different backgrounds, gradients, and patterns can be generated, with many customizable options.</p>
+
+	<p>Include the <code>canvas-pattern-generator.js</code> file directly in your projects, then add some code like the following to your HTML:</p>
+
+	<pre>&lt;canvas id="myCanvas"&gt;&lt;/canvas&gt;
+
+&lt;script src="canvas-pattern-generator.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+	const myCanvas = document.getElementById("myCanvas");
+	const ctx = myCanvas.getContext("2d");
+	const gradient = generateCanvasPattern(ctx, myCanvas.width, myCanvas.height);
+
+	ctx.fillStyle = gradient;
+	ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+&lt;/script&gt;
+</pre>
+	<p><strong>
+		The background generator script must be loaded before using the <code>generateCanvasPattern()</code> function.
+		An error will be thrown if the first argument passed to the function is not a <code>CanvasRenderingContext2D</code>.
+	</strong></p>
+
+	<canvas id="canvas" width="600" height="400"></canvas><br>
+	<button onclick="changePattern()">Generate New Pattern</button>
+
+	<script src="canvas-pattern-generator.js"></script>
+	<script>
+		function changePattern() {
+			const canvas = document.getElementById("canvas"),
+				ctx = canvas.getContext("2d"),
+				gradient = generateCanvasPattern(ctx, canvas.width, canvas.height);
+			ctx.fillStyle = gradient;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
+		changePattern();
+	</script>
+</body>
+
+</html>

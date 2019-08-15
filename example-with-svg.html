@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Background Generator Example with SVG</title>
+	<link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+	<h1>Background Generator with SVG</h1>
+	<p>This is a modified version of the background generator, made with JavaScript and SVG. Many different backgrounds, gradients, and patterns can be generated, with many customizable options.</p>
+
+	<p>Include the <code>svg-pattern-generator.js</code> file directly in your projects, then add some code like the following to your HTML:</p>
+	<pre>&lt;script src="svg-pattern-generator.js"&gt;&lt;/script&gt;
+&lt;script&gt;generateBackground()&lt;/script&gt;</pre>
+
+	<p><strong>The background generator script must be loaded before using the <code>generateBackground()</code> function.</strong></p>
+
+	<button onclick="changeBackground()">Generate New Pattern</button>
+
+	<script src="svg-pattern-generator.js"></script>
+	<script>
+		function changeBackground() {generateBackground();}
+		changeBackground();
+	</script>
+</body>
+
+</html>
